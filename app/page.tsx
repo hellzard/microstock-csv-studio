@@ -19,9 +19,8 @@ export default function Home() {
             <Link href="#security" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Security</Link>
           </nav>
           <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors">Log in</Link>
-            <Link href="/register">
-              <Button size="sm">Get Started</Button>
+            <Link href="/dashboard">
+              <Button size="sm">Go to Dashboard</Button>
             </Link>
           </div>
         </div>

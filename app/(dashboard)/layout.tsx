@@ -45,12 +45,7 @@ export default function DashboardLayout({
           </Link>
         </nav>
         
-        <div className="p-4 border-t border-white/10">
-          <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </Button>
-        </div>
+
       </aside>
 
       {/* Main Content */}
