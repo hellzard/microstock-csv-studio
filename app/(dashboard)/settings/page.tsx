@@ -16,16 +16,22 @@ export default function SettingsPage() {
   // Local state for form before saving
   const [defaultCopyright, setDefaultCopyright] = useState("");
   const [geminiApiKey, setGeminiApiKey] = useState("");
+  const [ftpHost, setFtpHost] = useState("");
+  const [ftpUser, setFtpUser] = useState("");
+  const [ftpPassword, setFtpPassword] = useState("");
   const [isSaved, setIsSaved] = useState(false);
 
   // Sync state after hydration to avoid SSR mismatch
   useEffect(() => {
     setDefaultCopyright(settings.defaultCopyright);
     setGeminiApiKey(settings.geminiApiKey);
-  }, [settings.defaultCopyright, settings.geminiApiKey]);
+    setFtpHost(settings.ftpHost || "");
+    setFtpUser(settings.ftpUser || "");
+    setFtpPassword(settings.ftpPassword || "");
+  }, [settings.defaultCopyright, settings.geminiApiKey, settings.ftpHost, settings.ftpUser, settings.ftpPassword]);
 
   const handleSave = () => {
-    settings.updateSettings({ defaultCopyright, geminiApiKey });
+    settings.updateSettings({ defaultCopyright, geminiApiKey, ftpHost, ftpUser, ftpPassword });
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2000);
   };
@@ -89,6 +95,51 @@ export default function SettingsPage() {
               Your key is stored securely in your browser and never sent to our servers. Get a free key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary hover:underline">Google AI Studio</a>.
             </p>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-white/10 bg-card/30">
+        <CardHeader>
+          <CardTitle className="text-lg">FTP Upload (Local Scripts)</CardTitle>
+          <CardDescription>Configure your default FTP credentials. These will be injected into a local upload script when you export.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="ftpHost">FTP Host</Label>
+              <Input 
+                id="ftpHost"
+                value={ftpHost}
+                onChange={(e) => setFtpHost(e.target.value)}
+                placeholder="ftp.shutterstock.com" 
+                className="bg-background/50" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ftpUser">Username</Label>
+              <Input 
+                id="ftpUser"
+                value={ftpUser}
+                onChange={(e) => setFtpUser(e.target.value)}
+                placeholder="Contributor ID" 
+                className="bg-background/50" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ftpPass">Password</Label>
+              <Input 
+                id="ftpPass"
+                type="password"
+                value={ftpPassword}
+                onChange={(e) => setFtpPassword(e.target.value)}
+                placeholder="••••••••" 
+                className="bg-background/50" 
+              />
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Warning: These credentials are saved in your local browser and will be written in plain text inside the `upload-ftp.bat` script upon export. Keep your computer secure.
+          </p>
         </CardContent>
         <CardFooter className="border-t border-white/5 pt-4">
           <Button onClick={handleSave} className="shadow-[0_0_15px_-5px_rgba(34,211,238,0.3)]">

@@ -39,6 +39,7 @@ export interface MasterAsset {
   illustration: boolean;
   matureContent: boolean;
   generativeAi: boolean;
+  aiGeneratedMetadata?: boolean;
   copyrightOwner?: string;
   category?: string | number;
   releases?: string[];

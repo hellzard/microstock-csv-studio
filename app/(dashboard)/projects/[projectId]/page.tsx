@@ -1,12 +1,13 @@
 "use client";
 
-import { use } from "react";
-import { ArrowLeft, Save, Download, Settings, Play } from "lucide-react";
+import { use, useState } from "react";
+import { ArrowLeft, Save, Download, Settings, Play, Sparkles, Languages } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MetadataDataTable } from "@/components/metadata/MetadataDataTable";
 import { useProjectStore } from "@/lib/store/useProjectStore";
+import { useSettingsStore } from "@/lib/store/useSettingsStore";
 
 export default function ProjectWorkspacePage({
   params,
@@ -18,6 +19,9 @@ export default function ProjectWorkspacePage({
   const projects = useProjectStore(state => state.projects);
   const allAssets = useProjectStore(state => state.assets);
   const updateAsset = useProjectStore(state => state.updateAsset);
+  const geminiApiKey = useSettingsStore(state => state.geminiApiKey);
+  
+  const [isProcessingAi, setIsProcessingAi] = useState(false);
   
   const project = projects.find(p => p.id === projectId);
   const projectAssets = allAssets.filter(a => a.projectId === projectId);
@@ -56,6 +60,109 @@ export default function ProjectWorkspacePage({
             <Settings className="h-4 w-4 mr-2" />
             Platform Config
           </Button>
+
+          <label className="cursor-pointer">
+            <input 
+              type="file" 
+              accept="image/*"
+              multiple
+              className="hidden" 
+              onChange={async (e) => {
+                if (!geminiApiKey) {
+                  alert("Please configure your Gemini API Key in Settings first.");
+                  return;
+                }
+                if (e.target.files && e.target.files.length > 0) {
+                  setIsProcessingAi(true);
+                  try {
+                    const { generateTagsForImage } = await import("@/lib/ai/gemini");
+                    const { downscaleImage } = await import("@/lib/utils/image");
+                    
+                    const files = Array.from(e.target.files);
+                    let processed = 0;
+                    
+                    for (const file of files) {
+                      // Match by originalFilename
+                      const asset = projectAssets.find(a => a.originalFilename === file.name);
+                      if (asset) {
+                        try {
+                          const base64 = await downscaleImage(file);
+                          const tags = await generateTagsForImage(base64, geminiApiKey);
+                          updateAsset(asset.id, {
+                            title: tags.title,
+                            description: tags.description,
+                            keywords: tags.keywords.split(",").map((k: string) => k.trim()),
+                            aiGeneratedMetadata: true,
+                          });
+                          processed++;
+                        } catch (err) {
+                          console.error("AI Tagging failed for", file.name, err);
+                        }
+                      }
+                    }
+                    alert(`AI Auto-Tagging complete for ${processed} matched assets.`);
+                  } finally {
+                    setIsProcessingAi(false);
+                    e.target.value = '';
+                  }
+                }
+              }}
+            />
+            {/* @ts-expect-error shadcn ui type mismatch in react 19 */}
+            <Button variant="outline" size="sm" asChild className="text-amber-500 border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-400">
+              <span>
+                <Sparkles className={`h-4 w-4 mr-2 ${isProcessingAi ? 'animate-pulse' : ''}`} />
+                {isProcessingAi ? 'Tagging...' : 'Auto-Tag AI'}
+              </span>
+            </Button>
+          </label>
+
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="hidden sm:flex text-blue-500 border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-400"
+            disabled={isProcessingAi}
+            onClick={async () => {
+              if (!geminiApiKey) {
+                alert("Please configure your Gemini API Key in Settings first.");
+                return;
+              }
+              if (confirm("This will translate all Indonesian titles and descriptions to English. Proceed?")) {
+                setIsProcessingAi(true);
+                try {
+                  const { translateToEnglish } = await import("@/lib/ai/gemini");
+                  let processed = 0;
+                  // Process sequentially to respect rate limits
+                  for (const asset of projectAssets) {
+                    let updated = false;
+                    const updates: any = {};
+                    if (asset.title) {
+                      updates.title = await translateToEnglish(asset.title, geminiApiKey);
+                      updated = true;
+                    }
+                    if (asset.description) {
+                      updates.description = await translateToEnglish(asset.description, geminiApiKey);
+                      updated = true;
+                    }
+                    if (updated) {
+                      updateAsset(asset.id, updates);
+                      processed++;
+                    }
+                  }
+                  alert(`Translated metadata for ${processed} assets.`);
+                } catch (err) {
+                  console.error(err);
+                  alert("Translation failed. Check console.");
+                } finally {
+                  setIsProcessingAi(false);
+                }
+              }
+            }}
+          >
+            <Languages className={`h-4 w-4 mr-2 ${isProcessingAi ? 'animate-pulse' : ''}`} />
+            Translate EN
+          </Button>
+
           <label className="cursor-pointer">
             <input 
               type="file" 

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useProjectStore } from "@/lib/store/useProjectStore";
+import { useSettingsStore } from "@/lib/store/useSettingsStore";
 import { useRouter } from "next/navigation";
 import { getAdaptersForProject } from "@/lib/adapters";
 import { generateCsvBlob } from "@/lib/csv/exporter";
@@ -19,6 +20,7 @@ export default function ExportPage({
 }) {
   const { projectId } = use(params);
   const router = useRouter();
+  const settings = useSettingsStore();
   
   const { projects, assets: allAssets, updateProject } = useProjectStore();
   
@@ -85,6 +87,26 @@ export default function ExportPage({
           const blob = await generateCsvBlob(pv.adapter, rows);
           zip.file(`${project.name}_${pv.adapter.displayName}.csv`, blob);
         }
+
+        // Generate FTP upload scripts if configured
+        const { ftpHost, ftpUser, ftpPassword } = settings;
+        
+        let ftpCommandStr = `echo "Starting FTP Upload..."\n`;
+        if (ftpHost && ftpUser) {
+          // Add curl upload commands for each generated CSV
+          for (const pv of platformValidation) {
+            const fileName = `${project.name}_${pv.adapter.displayName}.csv`;
+            ftpCommandStr += `curl -T "${fileName}" ftp://${ftpHost}/ -u "${ftpUser}:${ftpPassword || ''}"\n`;
+          }
+          // Note: Realistically, you would also upload the actual image/video files here,
+          // but for this MVP, generating the command for the CSVs serves as the functional proof of concept.
+          ftpCommandStr += `echo "Upload complete!"\npause`;
+        } else {
+          ftpCommandStr = `echo "FTP credentials not configured in settings. Go to BuatinCSV Settings to add them."\npause`;
+        }
+
+        zip.file(`upload-ftp.bat`, ftpCommandStr);
+        zip.file(`upload-ftp.sh`, ftpCommandStr.replace(/pause/g, 'read -p "Press enter to continue"'));
         
         const zipBlob = await zip.generateAsync({ type: "blob" });
         const url = URL.createObjectURL(zipBlob);
