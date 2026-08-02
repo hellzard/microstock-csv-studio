@@ -1,7 +1,7 @@
 {
-  "name": "Microstock CSV Studio",
-  "short_name": "CSV Studio",
-  "description": "Professional Microstock Metadata & CSV Generator",
+  "name": "BuatinCSV — Multi-Microstock Metadata Studio",
+  "short_name": "BuatinCSV",
+  "description": "Prepare, validate, and export metadata CSV files for multiple microstock contributor platforms from one organized workspace.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#09090b",
