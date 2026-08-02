@@ -23,6 +23,7 @@ export function LanguageSwitcher({ isCollapsed }: { isCollapsed?: boolean }) {
 
   return (
     <DropdownMenu>
+      {/* @ts-expect-error shadcn ui type mismatch in react 19 */}
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
