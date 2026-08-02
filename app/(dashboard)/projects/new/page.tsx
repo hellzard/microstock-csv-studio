@@ -10,15 +10,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useProjectStore } from "@/lib/store/useProjectStore";
+import { useSettingsStore } from "@/lib/store/useSettingsStore";
 import { MasterAsset } from "@/types/master-asset";
 import { AssetType } from "@/types/platforms";
 
 export default function NewProjectPage() {
   const router = useRouter();
   const { createProject, addAssets } = useProjectStore();
+  const { defaultCopyright: defaultCopyrightSetting } = useSettingsStore();
   
   const [name, setName] = useState("");
-  const [copyright, setCopyright] = useState("");
+  const [copyright, setCopyright] = useState(defaultCopyrightSetting || "");
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
