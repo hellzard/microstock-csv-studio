@@ -58,9 +58,16 @@ export default function ProjectsPage() {
                   <div className="h-10 w-10 shrink-0 rounded bg-primary/10 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors">
                     <Folder className="h-5 w-5 text-primary" />
                   </div>
-                  <Badge variant={project.status === 'Ready' ? 'default' : project.status === 'Exported' ? 'outline' : 'secondary'} className="text-xs">
-                    {project.status}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    {project.storageMode === 'cloud' ? (
+                      <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/20">Cloud</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-xs">Local</Badge>
+                    )}
+                    <Badge variant={project.status === 'Ready' ? 'default' : project.status === 'Exported' ? 'secondary' : 'secondary'} className="text-xs">
+                      {project.status}
+                    </Badge>
+                  </div>
                 </div>
                 <CardTitle className="text-lg truncate">{project.name}</CardTitle>
                 <CardDescription className="text-xs">

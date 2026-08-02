@@ -19,7 +19,9 @@ const PLATFORMS = [
   { id: 'shutterstock', name: 'Shutterstock' },
   { id: 'freepik', name: 'Freepik' },
   { id: 'vecteezy', name: 'Vecteezy' },
-  { id: 'getty', name: 'Getty/iStock' },
+  { id: 'getty', name: 'Getty/iStock (Planned)', disabled: true },
+  { id: 'pond5', name: 'Pond5 (Planned)', disabled: true },
+  { id: 'custom', name: 'Custom Schema (Alpha)', disabled: true },
 ];
 
 export default function NewProjectPage() {
@@ -200,14 +202,17 @@ export default function NewProjectPage() {
                         <button
                           key={platform.id}
                           type="button"
-                          onClick={() => togglePlatform(platform.id)}
+                          disabled={platform.disabled}
+                          onClick={() => !platform.disabled && togglePlatform(platform.id)}
                           className={`flex items-center justify-between p-3 border rounded-lg transition-all ${
                             isSelected
                               ? 'border-primary bg-primary/10' 
-                              : 'border-white/10 hover:bg-white/5'
+                              : platform.disabled 
+                                ? 'border-white/5 opacity-50 cursor-not-allowed bg-black/20'
+                                : 'border-white/10 hover:bg-white/5'
                           }`}
                         >
-                          <span className={`text-sm font-medium ${isSelected ? 'text-primary' : ''}`}>
+                          <span className={`text-sm font-medium ${isSelected ? 'text-primary' : ''} ${platform.disabled ? 'text-muted-foreground' : ''}`}>
                             {platform.name}
                           </span>
                           {isSelected && <CheckCircle2 className="h-4 w-4 text-primary" />}

@@ -286,7 +286,8 @@ export function MetadataDataTable({ data, onUpdateAsset, onBulkUpdate }: Metadat
       )}
 
       <div className="rounded-md border border-white/10 bg-card/50 overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="bg-muted/50 text-muted-foreground border-b border-white/10">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -330,6 +331,67 @@ export function MetadataDataTable({ data, onUpdateAsset, onBulkUpdate }: Metadat
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden divide-y divide-white/5">
+          {table.getRowModel().rows.length > 0 ? (
+            table.getRowModel().rows.map((row) => {
+              const asset = row.original;
+              const isSelected = row.getIsSelected();
+              return (
+                <div key={row.id} className={`p-4 space-y-3 transition-colors ${isSelected ? 'bg-primary/5' : ''}`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={row.getToggleSelectedHandler()}
+                        className="accent-primary w-4 h-4 rounded cursor-pointer shrink-0 mt-1"
+                      />
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">{asset.originalFilename}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {asset.assetType} • {(asset.fileSize / 1024 / 1024).toFixed(1)} MB
+                        </p>
+                      </div>
+                    </div>
+                    {/* Status badge rendered directly for mobile */}
+                    <div className="shrink-0">
+                      {flexRender(row.getVisibleCells().find(c => c.column.id === 'validation')?.column.columnDef.cell, row.getVisibleCells().find(c => c.column.id === 'validation')?.getContext()!)}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Input 
+                      defaultValue={asset.title || ""} 
+                      onBlur={(e) => onUpdateAsset?.(asset.id, { title: e.target.value })}
+                      className="h-8 text-sm"
+                      placeholder="Enter title..."
+                    />
+                    <Input
+                      defaultValue={asset.keywords?.join(", ") || ""}
+                      onBlur={(e) => {
+                        const val = e.target.value;
+                        const newKeywords = val ? val.split(",").map(k => k.trim()).filter(Boolean) : [];
+                        onUpdateAsset?.(asset.id, { keywords: newKeywords });
+                      }}
+                      className="h-8 text-sm"
+                      placeholder="Keywords (comma separated)"
+                    />
+                  </div>
+                  
+                  <div className="flex justify-end pt-1">
+                     {flexRender(row.getVisibleCells().find(c => c.column.id === 'actions')?.column.columnDef.cell, row.getVisibleCells().find(c => c.column.id === 'actions')?.getContext()!)}
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              No assets uploaded yet.
+            </div>
+          )}
         </div>
       </div>
     </div>

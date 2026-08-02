@@ -56,10 +56,44 @@ export default function ProjectWorkspacePage({
             <Settings className="h-4 w-4 mr-2" />
             Platform Config
           </Button>
-          <Button variant="secondary" size="sm">
-            <Play className="h-4 w-4 mr-2" />
-            Validate
-          </Button>
+          <label className="cursor-pointer">
+            <input 
+              type="file" 
+              accept=".csv" 
+              className="hidden" 
+              onChange={async (e) => {
+                if (e.target.files && e.target.files[0]) {
+                  try {
+                    const { importCsvFile } = await import("@/lib/csv/importer");
+                    const importedRows = await importCsvFile(e.target.files[0]);
+                    
+                    // Match by originalFilename
+                    importedRows.forEach(row => {
+                      if (!row.filename) return;
+                      const asset = projectAssets.find(a => a.originalFilename === row.filename || a.currentFilename === row.filename);
+                      if (asset) {
+                        updateAsset(asset.id, {
+                          title: row.title || asset.title,
+                          description: row.description || asset.description,
+                          keywords: row.keywords.length > 0 ? row.keywords : asset.keywords,
+                        });
+                      }
+                    });
+                    alert(`Imported metadata for ${importedRows.length} rows.`);
+                  } catch (err) {
+                    alert("Failed to parse CSV");
+                  }
+                  e.target.value = '';
+                }
+              }}
+            />
+            <Button variant="secondary" size="sm" asChild>
+              <span>
+                <Play className="h-4 w-4 mr-2" />
+                Import CSV
+              </span>
+            </Button>
+          </label>
           <Link href={`/projects/${projectId}/export`}>
             <Button size="sm" className="shadow-[0_0_15px_-5px_rgba(34,211,238,0.4)]">
               <Download className="h-4 w-4 mr-2" />
