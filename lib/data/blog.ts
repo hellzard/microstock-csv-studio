@@ -73,5 +73,69 @@ Stop wasting time on data entry and spend more time creating assets.
     date: "2026-08-02",
     tags: ["Workflow", "Productivity", "FTP", "CSV"],
     author: "BuatinCSV Team"
+  },
+  {
+    id: "3",
+    slug: "exif-metadata-embedded-jpg",
+    title: "EXIF Data Explained: Embed Metadata Directly into JPGs",
+    excerpt: "Why rely on agency websites to read your tags? Learn how to embed IPTC and EXIF metadata directly into your image files before uploading.",
+    content: `
+# EXIF Data Explained: Embed Metadata Directly into JPGs
+
+When you upload a photo to an agency, how does it automatically know the title and keywords you want to use? The answer is embedded metadata.
+
+## What is EXIF and IPTC?
+- **EXIF (Exchangeable Image File Format):** Traditionally used by cameras to store technical data like ISO, shutter speed, and aperture.
+- **IPTC (International Press Telecommunications Council):** Used by photojournalists and stock contributors to store editorial data, copyright info, titles, descriptions, and keywords.
+
+When microstock contributors say they are "embedding EXIF", they usually mean they are writing IPTC data into the JPG file header.
+
+## Why You Should Embed Metadata
+If you don't embed metadata, you are forced to type your keywords manually on every single agency website you use. This is incredibly inefficient. 
+By embedding the data directly into the file:
+1. **It's Portable:** The keywords travel with the file. You can upload the same file to Shutterstock, Adobe Stock, and Alamy, and they will all read the tags automatically.
+2. **It's Safe:** If an agency's database crashes, your original file still contains all the descriptive data.
+3. **It's Fast:** You do the work once, on your own computer, using your preferred tools.
+
+## How to Embed Metadata
+You can use heavy desktop software like Adobe Lightroom or Photo Mechanic, but what if you're working from a browser or a Chromebook?
+
+That's where **BuatinCSV** comes in. Our platform doesn't just generate CSV spreadsheets; it has a built-in EXIF injector. You can select your processed JPGs, and with one click, BuatinCSV will seamlessly write your optimized titles and keywords directly into the image files using the \`piexifjs\` engine—all without leaving your browser!
+
+Take control of your files today.
+    `,
+    date: "2026-08-03",
+    tags: ["EXIF", "IPTC", "JPG", "Metadata"],
+    author: "BuatinCSV Team"
+  },
+  {
+    id: "4",
+    slug: "translating-metadata-non-english-markets",
+    title: "Translating Metadata: Selling in Non-English Markets",
+    excerpt: "Don't limit your sales to English-speaking buyers. Discover why hyper-localizing your keywords can unlock massive earnings in Europe and Asia.",
+    content: `
+# Translating Metadata: Selling in Non-English Markets
+
+English is the undisputed language of the internet, and nearly every major microstock agency expects you to submit your primary metadata in English. But what if the buyer searching for your image doesn't speak English?
+
+## The Hidden Market
+While global agencies automatically translate English keywords into other languages for their buyers (e.g., translating "dog" to "perro" for Spanish users), the automatic translation is often flawed. It misses cultural nuances, slang, and specific regional search terms.
+
+Furthermore, there are massive regional agencies (like Pixta in Japan, or specific European stock sites) where native language metadata is either required or heavily prioritized in the search algorithm.
+
+## How to Hyper-Localize Your Keywords
+If you want to capture the Asian or European market, you need to provide accurate, localized metadata.
+But hiring a translator for a batch of 1,000 photos is too expensive.
+
+**The Solution:**
+You need a workflow that automatically translates your base metadata into multiple languages while retaining the context of stock photography. 
+
+With **BuatinCSV**, we've integrated real-time translation tools powered by the MyMemory API. You can write your keywords in your native language (e.g., Indonesian or Spanish), and the tool will instantly translate them into perfect English for Shutterstock, while also giving you the option to export localized CSVs for regional agencies.
+
+Stop leaving money on the table. Speak your buyer's language!
+    `,
+    date: "2026-08-03",
+    tags: ["Translation", "Localization", "Keywords", "Sales"],
+    author: "BuatinCSV Team"
   }
 ];
