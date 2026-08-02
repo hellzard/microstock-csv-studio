@@ -3,28 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Layers, CheckCircle2, Shield, Settings2, FileImage, Download } from 'lucide-react';
 
+import { Navigation } from '@/components/ui/Navigation';
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Layers className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl tracking-tight">Microstock CSV Studio</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-            <Link href="#platforms" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Platforms</Link>
-            <Link href="#security" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Security</Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button size="sm">Go to Dashboard</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navigation />
 
       <main className="flex-1">
         {/* Hero Section */}
