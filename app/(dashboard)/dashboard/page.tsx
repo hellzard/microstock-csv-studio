@@ -1,10 +1,22 @@
+"use client";
+
 import Link from "next/link";
-import { Plus, FileImage, Layers, Download, CheckCircle2, AlertTriangle, Folder } from "lucide-react";
+import { Plus, FileImage, Layers, Download, AlertTriangle, Folder, CheckCircle2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useProjectStore } from "@/lib/store/useProjectStore";
+import { formatDistanceToNow } from "date-fns";
 
 export default function DashboardPage() {
+  const { projects, assets, deleteProject } = useProjectStore();
+
+  const totalAssets = assets.length;
+  // Let's pretend any export count is a derivative of exported projects
+  const exportedCount = projects.filter(p => p.status === 'Exported').length;
+  // Warnings could be assets with empty titles or keywords
+  const unresolvedIssues = assets.filter(a => !a.title || a.keywords.length < 5).length;
+
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -27,7 +39,7 @@ export default function DashboardPage() {
             <Layers className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">{projects.length}</div>
           </CardContent>
         </Card>
         <Card className="bg-card/50 border-white/10">
@@ -36,25 +48,25 @@ export default function DashboardPage() {
             <FileImage className="h-4 w-4 text-secondary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,248</div>
+            <div className="text-2xl font-bold">{totalAssets}</div>
           </CardContent>
         </Card>
         <Card className="bg-card/50 border-white/10">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">CSV Exports</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Projects Exported</CardTitle>
             <Download className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">34</div>
+            <div className="text-2xl font-bold">{exportedCount}</div>
           </CardContent>
         </Card>
         <Card className="bg-card/50 border-white/10">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Unresolved Issues</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Assets Needing Review</CardTitle>
             <AlertTriangle className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-500">3</div>
+            <div className="text-2xl font-bold text-amber-500">{unresolvedIssues}</div>
           </CardContent>
         </Card>
       </div>
@@ -63,33 +75,43 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-xl font-semibold tracking-tight">Recent Projects</h2>
           <Card className="border-white/10 bg-card/30">
-            <div className="divide-y divide-white/5">
-              {[
-                { name: "Summer Beach Photos", assets: 45, date: "2 hours ago", status: "Ready" },
-                { name: "AI Architecture Concepts", assets: 120, date: "Yesterday", status: "Draft" },
-                { name: "City Timelapse 4K", assets: 12, date: "Last week", status: "Exported" },
-              ].map((project, i) => (
-                <div key={i} className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded bg-primary/10 flex items-center justify-center">
-                      <Folder className="h-5 w-5 text-primary" />
+            {projects.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground">
+                <p>No projects yet. Create one to get started!</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-white/5">
+                {projects.map((project) => {
+                  const projectAssets = assets.filter(a => a.projectId === project.id).length;
+                  return (
+                    <div key={project.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-white/5 transition-colors gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 shrink-0 rounded bg-primary/10 flex items-center justify-center">
+                          <Folder className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-sm max-w-[200px] truncate">{project.name}</h3>
+                          <p className="text-xs text-muted-foreground">
+                            {projectAssets} assets • {formatDistanceToNow(new Date(project.createdAt), { addSuffix: true })}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={project.status === 'Ready' ? 'default' : project.status === 'Exported' ? 'outline' : 'secondary'} className="text-xs shrink-0">
+                          {project.status}
+                        </Badge>
+                        <Link href={`/projects/${project.id}`}>
+                          <Button variant="ghost" size="sm">Open</Button>
+                        </Link>
+                        <Button variant="ghost" size="icon" onClick={() => deleteProject(project.id)} className="text-muted-foreground hover:text-destructive">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-medium text-sm">{project.name}</h3>
-                      <p className="text-xs text-muted-foreground">{project.assets} assets • {project.date}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Badge variant={project.status === 'Ready' ? 'default' : project.status === 'Exported' ? 'outline' : 'secondary'} className="text-xs">
-                      {project.status}
-                    </Badge>
-                    <Link href={`/projects/${i}`}>
-                      <Button variant="ghost" size="sm">Open</Button>
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  )
+                })}
+              </div>
+            )}
           </Card>
         </div>
 
@@ -116,5 +138,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-

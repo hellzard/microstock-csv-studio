@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,8 +10,12 @@ import { MasterAsset } from "@/types/master-asset";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
-export function MetadataDataTable({ data }: { data: MasterAsset[] }) {
-  // Simplified columns for the prototype
+interface MetadataDataTableProps {
+  data: MasterAsset[];
+  onUpdateAsset?: (assetId: string, updates: Partial<MasterAsset>) => void;
+}
+
+export function MetadataDataTable({ data, onUpdateAsset }: MetadataDataTableProps) {
   const columns: ColumnDef<MasterAsset>[] = [
     {
       accessorKey: "originalFilename",
@@ -24,40 +27,50 @@ export function MetadataDataTable({ data }: { data: MasterAsset[] }) {
     {
       accessorKey: "title",
       header: "Title",
-      cell: (info) => (
-        <Input 
-          defaultValue={(info.getValue() as string) || ""} 
-          className="h-8 bg-transparent border-transparent hover:border-white/20 focus:border-primary rounded-sm"
-          placeholder="Enter title..."
-        />
-      ),
+      cell: (info) => {
+        const asset = info.row.original;
+        return (
+          <Input 
+            defaultValue={(info.getValue() as string) || ""} 
+            onBlur={(e) => onUpdateAsset?.(asset.id, { title: e.target.value })}
+            className="h-8 bg-transparent border-transparent hover:border-white/20 focus:border-primary rounded-sm"
+            placeholder="Enter title..."
+          />
+        );
+      },
     },
     {
       accessorKey: "description",
       header: "Description",
-      cell: (info) => (
-        <Input 
-          defaultValue={(info.getValue() as string) || ""} 
-          className="h-8 bg-transparent border-transparent hover:border-white/20 focus:border-primary rounded-sm"
-          placeholder="Enter description..."
-        />
-      ),
+      cell: (info) => {
+        const asset = info.row.original;
+        return (
+          <Input 
+            defaultValue={(info.getValue() as string) || ""} 
+            onBlur={(e) => onUpdateAsset?.(asset.id, { description: e.target.value })}
+            className="h-8 bg-transparent border-transparent hover:border-white/20 focus:border-primary rounded-sm"
+            placeholder="Enter description..."
+          />
+        );
+      },
     },
     {
       accessorKey: "keywords",
       header: "Keywords",
       cell: (info) => {
+        const asset = info.row.original;
         const kws = info.getValue() as string[];
         return (
-          <div className="flex items-center gap-1 overflow-hidden h-8">
-            {kws?.length ? (
-              <Badge variant="outline" className="text-[10px] font-normal truncate max-w-[150px]">
-                {kws.join(", ")}
-              </Badge>
-            ) : (
-              <span className="text-xs text-muted-foreground italic">0 tags</span>
-            )}
-          </div>
+          <Input
+            defaultValue={kws?.join(", ") || ""}
+            onBlur={(e) => {
+              const val = e.target.value;
+              const newKeywords = val ? val.split(",").map(k => k.trim()).filter(Boolean) : [];
+              onUpdateAsset?.(asset.id, { keywords: newKeywords });
+            }}
+            className="h-8 bg-transparent border-transparent hover:border-white/20 focus:border-primary rounded-sm text-xs"
+            placeholder="Comma separated..."
+          />
         );
       },
     },

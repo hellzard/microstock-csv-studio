@@ -1,60 +1,38 @@
+"use client";
+
+import { use } from "react";
 import { ArrowLeft, Save, Download, Settings, Play } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MetadataDataTable } from "@/components/metadata/MetadataDataTable";
-import { MasterAsset } from "@/types/master-asset";
+import { useProjectStore } from "@/lib/store/useProjectStore";
 
-// Mock data for the prototype
-const mockAssets: MasterAsset[] = [
-  {
-    id: "1",
-    projectId: "proj_1",
-    originalFilename: "IMG_9042_beach_sunset.jpg",
-    currentFilename: "IMG_9042_beach_sunset.jpg",
-    extension: "jpg",
-    assetType: "image",
-    mimeType: "image/jpeg",
-    fileSize: 4500000,
-    title: "Beautiful golden hour sunset over tropical beach",
-    keywords: ["sunset", "beach", "ocean", "tropical", "sand", "waves"],
-    editorial: false,
-    illustration: false,
-    matureContent: false,
-    generativeAi: false,
-    auditStatus: "Ready",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    projectId: "proj_1",
-    originalFilename: "Vector_cityscape_ai_generated.eps",
-    currentFilename: "Vector_cityscape_ai_generated.eps",
-    extension: "eps",
-    assetType: "vector",
-    mimeType: "application/postscript",
-    fileSize: 1200000,
-    title: "Futuristic neon city skyline illustration",
-    keywords: ["cityscape", "neon", "cyberpunk", "futuristic", "skyline"],
-    editorial: false,
-    illustration: true,
-    matureContent: false,
-    generativeAi: true,
-    prompt: "cyberpunk city skyline at night, neon lights, highly detailed vector illustration",
-    generationModel: "Midjourney v5",
-    auditStatus: "Warning",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-export default async function ProjectWorkspacePage({
+export default function ProjectWorkspacePage({
   params,
 }: {
   params: Promise<{ projectId: string }>;
 }) {
-  const { projectId } = await params;
+  const { projectId } = use(params);
+  
+  const projects = useProjectStore(state => state.projects);
+  const allAssets = useProjectStore(state => state.assets);
+  const updateAsset = useProjectStore(state => state.updateAsset);
+  
+  const project = projects.find(p => p.id === projectId);
+  const projectAssets = allAssets.filter(a => a.projectId === projectId);
+
+  if (!project) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-6rem)]">
+        <h2 className="text-2xl font-bold tracking-tight mb-2">Project not found</h2>
+        <p className="text-muted-foreground mb-6">The project you are looking for does not exist or has been deleted.</p>
+        <Link href="/dashboard">
+          <Button>Back to Dashboard</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] md:h-[calc(100vh-6rem)] -m-6 md:-m-8">
@@ -68,9 +46,9 @@ export default async function ProjectWorkspacePage({
           </Link>
           <div className="flex items-center gap-3">
             <h1 className="font-semibold truncate max-w-[200px] sm:max-w-md">
-              Summer Beach Photos
+              {project.name}
             </h1>
-            <Badge variant="outline" className="hidden sm:inline-flex">2 Assets</Badge>
+            <Badge variant="outline" className="hidden sm:inline-flex">{projectAssets.length} Assets</Badge>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -97,10 +75,13 @@ export default async function ProjectWorkspacePage({
           <h2 className="text-lg font-medium tracking-tight">Master Metadata</h2>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Save className="h-3 w-3" />
-            <span>Autosaved just now</span>
+            <span>Autosaved</span>
           </div>
         </div>
-        <MetadataDataTable data={mockAssets} />
+        <MetadataDataTable 
+          data={projectAssets} 
+          onUpdateAsset={(id, updates) => updateAsset(id, updates)} 
+        />
       </div>
     </div>
   );

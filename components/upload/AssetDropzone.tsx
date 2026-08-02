@@ -1,14 +1,23 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { UploadCloud, File, AlertCircle, X, Image as ImageIcon, Video, FileAudio } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { UploadCloud, File, AlertCircle, X, Image as ImageIcon, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MasterAsset } from "@/types/master-asset";
 
-export function AssetDropzone() {
+interface AssetDropzoneProps {
+  onFilesChanged?: (files: File[]) => void;
+}
+
+export function AssetDropzone({ onFilesChanged }: AssetDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [queue, setQueue] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (onFilesChanged) {
+      onFilesChanged(queue);
+    }
+  }, [queue, onFilesChanged]);
 
   const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -42,7 +51,12 @@ export function AssetDropzone() {
       setError(`Some files were rejected. Supported formats: ${validExtensions.join(", ")}`);
     }
 
-    setQueue(prev => [...prev, ...validFiles]);
+    setQueue(prev => {
+      // Prevent duplicates by name
+      const existingNames = new Set(prev.map(p => p.name));
+      const newFiles = validFiles.filter(f => !existingNames.has(f.name));
+      return [...prev, ...newFiles];
+    });
   };
 
   const removeFile = (index: number) => {
@@ -102,9 +116,8 @@ export function AssetDropzone() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">{queue.length} files queued</h3>
-            <Button size="sm">Process Batch</Button>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 max-h-60 overflow-y-auto pr-2">
             {queue.map((file, i) => (
               <div key={`${file.name}-${i}`} className="flex items-center gap-3 p-3 rounded-lg border border-white/10 bg-card/50">
                 <div className="h-10 w-10 shrink-0 rounded bg-muted flex items-center justify-center">
@@ -116,7 +129,7 @@ export function AssetDropzone() {
                   <p className="text-sm font-medium truncate">{file.name}</p>
                   <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => removeFile(i)}>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0" onClick={() => removeFile(i)}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
