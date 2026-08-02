@@ -57,6 +57,7 @@ export default function DashboardLayout({
           </Link>
           
           <Sheet>
+            {/* @ts-expect-error shadcn ui type mismatch in react 19 */}
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-5 w-5" />

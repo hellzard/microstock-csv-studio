@@ -20,9 +20,7 @@ export default function ExportPage({
   const { projectId } = use(params);
   const router = useRouter();
   
-  const projects = useProjectStore(state => state.projects);
-  const allAssets = useProjectStore(state => state.assets);
-  const updateProjectStatus = useProjectStore(state => state.updateProjectStatus);
+  const { projects, assets: allAssets, updateProject } = useProjectStore();
   
   const project = projects.find(p => p.id === projectId);
   const projectAssets = allAssets.filter(a => a.projectId === projectId);
@@ -99,7 +97,7 @@ export default function ExportPage({
         URL.revokeObjectURL(url);
       }
 
-      updateProjectStatus(projectId, 'Exported');
+      updateProject(projectId, { status: 'Exported' });
     } catch (error) {
       console.error("Export failed:", error);
       alert("Failed to export files. Please try again.");

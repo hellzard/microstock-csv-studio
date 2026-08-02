@@ -87,6 +87,7 @@ export default function ProjectWorkspacePage({
                 }
               }}
             />
+            {/* @ts-expect-error shadcn ui type mismatch in react 19 */}
             <Button variant="secondary" size="sm" asChild>
               <span>
                 <Play className="h-4 w-4 mr-2" />

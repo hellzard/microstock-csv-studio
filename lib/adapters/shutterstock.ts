@@ -59,9 +59,9 @@ export const shutterstockAdapter: PlatformAdapter = {
   
   transformAsset: (asset: MasterAsset): PlatformRow => {
     return {
-      Filename: asset.currentFilename,
-      Description: asset.title,
-      Keywords: asset.keywords.slice(0, 50).join(","), // Enforce 50 limit strictly for export
+      Filename: asset.currentFilename || "",
+      Description: asset.title || "",
+      Keywords: (asset.keywords || []).slice(0, 50).join(","),
       Categories: asset.category?.toString() || "",
       Illustrations: asset.illustration ? "yes" : "no",
       "Mature Content": asset.matureContent ? "yes" : "no",

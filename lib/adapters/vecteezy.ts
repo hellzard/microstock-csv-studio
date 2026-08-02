@@ -46,7 +46,7 @@ export const vecteezyAdapter: PlatformAdapter = {
   transformAsset: (asset: MasterAsset): PlatformRow => {
     return {
       Filename: asset.currentFilename,
-      Title: asset.title,
+      Title: asset.title || "",
       Keywords: asset.keywords.join(","),
       License: "Free", // Can be Free or Pro
     };

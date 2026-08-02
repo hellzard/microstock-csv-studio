@@ -38,9 +38,12 @@ export interface MasterAsset {
   editorial: boolean;
   illustration: boolean;
   matureContent: boolean;
-  
-  // AI/Generative
   generativeAi: boolean;
+  copyrightOwner?: string;
+  category?: string | number;
+  releases?: string[];
+  
+  auditStatus: 'Pass' | 'Warning' | 'Error';
   fictionalPeople?: boolean;
   fictionalProperty?: boolean;
   recognizablePerson?: boolean;
@@ -56,10 +59,8 @@ export interface MasterAsset {
   releaseFiles?: string[];
   
   // Commerce
-  copyrightOwner?: string;
   price?: number;
   notes?: string;
-  auditStatus?: "Ready" | "Warning" | "Error" | "Excluded";
   
   // Overrides per platform
   platformOverrides?: Record<string, Partial<MasterAsset>>;

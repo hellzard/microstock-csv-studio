@@ -53,48 +53,46 @@ export default function NewProjectPage() {
     // Simulate slight processing delay for UX
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    const project = createProject({
-      name,
-      defaultCopyright: copyright,
-      storageMode,
-      selectedPlatforms,
-      generativeAiDefault,
-      assetType
-    });
-    
-    if (files.length > 0) {
-      const newAssets: MasterAsset[] = files.map((file, i) => {
-        const ext = file.name.split('.').pop()?.toLowerCase() || '';
-        let fileAssetType: AssetType = "image";
-        if (ext === "mp4" || ext === "mov") fileAssetType = "video";
-        if (ext === "eps" || ext === "ai") fileAssetType = "vector";
-        
-        return {
-          id: `asset_${Date.now()}_${i}`,
+    try {
+      const project = await createProject({
+        name,
+        storageMode,
+        assetType,
+        defaultCopyright: copyright,
+        generativeAiDefault,
+        selectedPlatforms,
+      });
+
+      if (files.length > 0) {
+        // Create initial assets for the files
+        const newAssets: MasterAsset[] = files.map(file => ({
+          id: `asset_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
           projectId: project.id,
           originalFilename: file.name,
           currentFilename: file.name,
-          extension: ext,
-          assetType: fileAssetType,
-          mimeType: file.type || "application/octet-stream",
+          extension: file.name.split('.').pop() || '',
+          assetType: assetType === 'mixed' ? (file.type.includes('video') ? 'video' : 'image') : assetType as 'image' | 'video' | 'vector',
+          mimeType: file.type,
           fileSize: file.size,
           title: "",
           keywords: [],
           editorial: false,
-          illustration: fileAssetType === "vector",
+          illustration: false,
           matureContent: false,
           generativeAi: generativeAiDefault,
-          auditStatus: "Warning", 
+          copyrightOwner: copyright,
+          auditStatus: 'Warning',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          copyrightOwner: copyright || undefined,
-        };
-      });
-      
-      addAssets(newAssets);
+        }));
+        await addAssets(newAssets);
+      }
+
+      router.push(`/projects/${project.id}`);
+    } catch (error) {
+      console.error("Failed to create project", error);
+      setIsSubmitting(false);
     }
-    
-    router.push(`/projects/${project.id}`);
   };
 
   return (

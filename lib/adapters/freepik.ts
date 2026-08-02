@@ -48,9 +48,9 @@ export const freepikAdapter: PlatformAdapter = {
   
   transformAsset: (asset: MasterAsset): PlatformRow => {
     return {
-      "File name": asset.currentFilename,
-      Title: asset.title,
-      Keywords: asset.keywords.join(","),
+      "File name": asset.currentFilename || "",
+      Title: asset.title || "",
+      Keywords: (asset.keywords || []).join(","),
     };
   }
 };

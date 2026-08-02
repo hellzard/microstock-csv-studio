@@ -59,7 +59,7 @@ export const adobeAdapter: PlatformAdapter = {
   transformAsset: (asset: MasterAsset): PlatformRow => {
     return {
       Filename: asset.currentFilename,
-      Title: asset.title,
+      Title: asset.title || "",
       Keywords: asset.keywords.join(","),
       Category: asset.category?.toString() || "1", // Default Category
       Releases: asset.releases?.join(",") || "",
