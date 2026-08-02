@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { CloudSyncProvider } from "@/components/providers/CloudSyncProvider";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
 import { useTranslations } from "next-intl";
 
 export default function DashboardLayout({
@@ -16,45 +17,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-white/10 bg-card hidden md:flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b border-white/10">
-          <Link href="/" className="flex items-center gap-2 text-primary">
-            <Layers className="h-6 w-6" />
-            <span className="font-bold text-lg tracking-tight text-foreground">BuatinCSV</span>
-          </Link>
-        </div>
-        
-        <nav className="flex-1 p-4 space-y-1">
-          <Link href="/dashboard">
-            <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
-              <Home className="h-4 w-4" />
-              {t("dashboard")}
-            </Button>
-          </Link>
-          <Link href="/projects">
-            <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
-              <Folder className="h-4 w-4" />
-              {t("projects")}
-            </Button>
-          </Link>
-          <Link href="/templates">
-            <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
-              <UploadCloud className="h-4 w-4" />
-              {t("templates")}
-            </Button>
-          </Link>
-          <Link href="/settings">
-            <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
-              <Settings className="h-4 w-4" />
-              {t("settings")}
-            </Button>
-          </Link>
-        </nav>
-        
-        <div className="p-4 border-t border-white/10">
-          <LanguageSwitcher />
-        </div>
-      </aside>
+      <DashboardSidebar />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col">

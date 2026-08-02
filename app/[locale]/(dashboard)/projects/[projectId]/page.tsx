@@ -5,9 +5,11 @@ import { ArrowLeft, Save, Download, Settings, Play, Sparkles, Languages } from "
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MetadataDataTable } from "@/components/metadata/MetadataDataTable";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useSettingsStore } from "@/lib/store/useSettingsStore";
+import { translateText, translateKeywords } from "@/lib/ai/translator";
 
 export default function ProjectWorkspacePage({
   params,
@@ -77,6 +79,7 @@ export default function ProjectWorkspacePage({
                   try {
                     const { generateTagsForImage } = await import("@/lib/ai/gemini");
                     const { downscaleImage } = await import("@/lib/utils/image");
+                    const { detectFacesInImage } = await import("@/lib/ai/face-detection");
                     
                     const files = Array.from(e.target.files);
                     let processed = 0;
@@ -86,6 +89,14 @@ export default function ProjectWorkspacePage({
                       const asset = projectAssets.find(a => a.originalFilename === file.name);
                       if (asset) {
                         try {
+                          // Check for faces
+                          const url = URL.createObjectURL(file);
+                          const img = new Image();
+                          img.src = url;
+                          await new Promise(r => { img.onload = r; });
+                          const hasFaces = await detectFacesInImage(img);
+                          URL.revokeObjectURL(url);
+                          
                           const base64 = await downscaleImage(file);
                           const tags = await generateTagsForImage(base64, geminiApiKey);
                           updateAsset(asset.id, {
@@ -93,6 +104,7 @@ export default function ProjectWorkspacePage({
                             description: tags.description,
                             keywords: tags.keywords.split(",").map((k: string) => k.trim()),
                             aiGeneratedMetadata: true,
+                            modelReleaseRequired: hasFaces
                           });
                           processed++;
                         } catch (err) {
@@ -162,6 +174,66 @@ export default function ProjectWorkspacePage({
             <Languages className={`h-4 w-4 mr-2 ${isProcessingAi ? 'animate-pulse' : ''}`} />
             Translate EN
           </Button>
+
+          <DropdownMenu>
+            {/* @ts-expect-error shadcn ui type mismatch in react 19 */}
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="hidden sm:flex text-indigo-500 border-indigo-500/30 hover:bg-indigo-500/10 hover:text-indigo-400"
+                disabled={isProcessingAi}
+              >
+                <Languages className={`h-4 w-4 mr-2 ${isProcessingAi ? 'animate-pulse' : ''}`} />
+                Hyper-Localize
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-card border-white/10">
+              {[
+                { code: 'es', label: 'Spanish (ES)' },
+                { code: 'ja', label: 'Japanese (JA)' },
+                { code: 'de', label: 'German (DE)' },
+                { code: 'fr', label: 'French (FR)' }
+              ].map(lang => (
+                <DropdownMenuItem 
+                  key={lang.code}
+                  className="cursor-pointer hover:bg-white/5"
+                  onClick={async () => {
+                    if (confirm(`Translate metadata to ${lang.label}? This uses a free API with strict rate limits.`)) {
+                      setIsProcessingAi(true);
+                      try {
+                        let processed = 0;
+                        for (const asset of projectAssets) {
+                          const updates: any = {};
+                          if (asset.title) {
+                            updates.title = (await translateText(asset.title, lang.code, "en")).text;
+                          }
+                          if (asset.description) {
+                            updates.description = (await translateText(asset.description, lang.code, "en")).text;
+                          }
+                          if (asset.keywords && asset.keywords.length > 0) {
+                            updates.keywords = await translateKeywords(asset.keywords, lang.code, "en");
+                          }
+                          updateAsset(asset.id, updates);
+                          processed++;
+                          // Artificial delay to prevent MyMemory rate limits (max 100 requests/minute)
+                          await new Promise(r => setTimeout(r, 1000));
+                        }
+                        alert(`Hyper-Localized ${processed} assets to ${lang.label}.`);
+                      } catch (err) {
+                        console.error(err);
+                        alert("Hyper-Localization encountered an error or rate limit. Check console.");
+                      } finally {
+                        setIsProcessingAi(false);
+                      }
+                    }
+                  }}
+                >
+                  {lang.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <label className="cursor-pointer">
             <input 

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 280px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #09090b;
+      color: #fafafa;
+      margin: 0;
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status {
+      font-size: 12px;
+      padding: 8px;
+      border-radius: 6px;
+      background: #27272a;
+      margin-bottom: 12px;
+    }
+    button {
+      width: 100%;
+      background: #22d3ee;
+      color: #000;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #06b6d4;
+    }
+    button:disabled {
+      background: #52525b;
+      color: #a1a1aa;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h2>BuatinCSV Auto-Submitter</h2>
+  <div class="status" id="statusBox">
+    Status: <span id="statusText">Waiting for page...</span>
+  </div>
+  <button id="injectBtn" disabled>Inject Metadata Here</button>
+  <script src="popup.js"></script>
+</body>
+</html>

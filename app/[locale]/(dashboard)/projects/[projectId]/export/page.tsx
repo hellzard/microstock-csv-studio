@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { getAdaptersForProject } from "@/lib/adapters";
 import { generateCsvBlob } from "@/lib/csv/exporter";
 import JSZip from "jszip";
+import { injectExifToImage } from "@/lib/utils/exif";
 
 export default function ExportPage({
   params,
@@ -28,7 +29,8 @@ export default function ExportPage({
   const projectAssets = allAssets.filter(a => a.projectId === projectId);
   
   const [isExporting, setIsExporting] = useState(false);
-  const [exportType, setExportType] = useState<"csv" | "zip">("csv");
+  const [exportType, setExportType] = useState<"csv" | "zip" | "exif">("csv");
+  const [sourceFiles, setSourceFiles] = useState<File[]>([]);
 
   if (!project) return null;
 
@@ -79,7 +81,7 @@ export default function ExportPage({
           await new Promise(r => setTimeout(r, 500));
         }
       } else {
-        // Generate a ZIP containing all CSVs
+        // Generate a ZIP containing CSVs and optionally injected images
         const zip = new JSZip();
         
         for (const pv of platformValidation) {
@@ -99,14 +101,12 @@ export default function ExportPage({
             ftpCommandStr += `curl -T "${fileName}" ftp://${ftpHost}/ -u "${ftpUser}:${ftpPassword || ''}"\n`;
           }
           
-          // Add curl upload commands for each actual asset image
           ftpCommandStr += `echo "Uploading media assets..."\n`;
           for (const asset of projectAssets) {
             if (asset.originalFilename) {
               ftpCommandStr += `curl -T "${asset.originalFilename}" ftp://${ftpHost}/ -u "${ftpUser}:${ftpPassword || ''}"\n`;
             }
           }
-          
           ftpCommandStr += `echo "Upload complete!"\npause`;
         } else {
           ftpCommandStr = `echo "FTP credentials not configured in settings. Go to BuatinCSV Settings to add them."\npause`;
@@ -114,6 +114,17 @@ export default function ExportPage({
 
         zip.file(`upload-ftp.bat`, ftpCommandStr);
         zip.file(`upload-ftp.sh`, ftpCommandStr.replace(/pause/g, 'read -p "Press enter to continue"'));
+
+        // Inject EXIF into images if EXIF mode is selected
+        if (exportType === "exif" && sourceFiles.length > 0) {
+          for (const file of sourceFiles) {
+            const asset = projectAssets.find(a => a.originalFilename === file.name);
+            if (asset) {
+              const modifiedBlob = await injectExifToImage(file, asset);
+              zip.file(file.name, modifiedBlob);
+            }
+          }
+        }
         
         const zipBlob = await zip.generateAsync({ type: "blob" });
         const url = URL.createObjectURL(zipBlob);
@@ -245,6 +256,25 @@ export default function ExportPage({
                   <div>
                     <p className="text-sm font-medium">Full ZIP Package</p>
                     <p className="text-xs text-muted-foreground mt-1">Includes CSVs packaged together for convenience.</p>
+                  </div>
+                </label>
+                <label className="flex items-start gap-3 p-3 rounded-lg border border-white/10 bg-card hover:bg-white/5 cursor-pointer transition-colors">
+                  <input type="radio" name="exportType" checked={exportType === "exif"} onChange={() => setExportType("exif")} className="mt-1 accent-primary" />
+                  <div className="w-full">
+                    <p className="text-sm font-medium">Inject EXIF & ZIP</p>
+                    <p className="text-xs text-muted-foreground mt-1 mb-2">Inject title and keywords directly into JPEG files before Zipping.</p>
+                    {exportType === "exif" && (
+                      <div className="mt-2">
+                         <input 
+                          type="file" 
+                          multiple 
+                          accept="image/jpeg"
+                          onChange={(e) => setSourceFiles(e.target.files ? Array.from(e.target.files) : [])}
+                          className="text-xs w-full p-2 border border-white/10 rounded bg-background"
+                        />
+                        {sourceFiles.length > 0 && <p className="text-xs text-primary mt-1">{sourceFiles.length} files ready to be injected.</p>}
+                      </div>
+                    )}
                   </div>
                 </label>
               </div>

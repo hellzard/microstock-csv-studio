@@ -1,9 +1,10 @@
 import { Link } from "@/i18n/routing";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Layers, CheckCircle2, Shield, Settings2, FileImage, Download, Info, AlertTriangle, Hammer } from 'lucide-react';
+import { ArrowRight, Layers, CheckCircle2, Shield, Settings2, FileImage, Download, Info, AlertTriangle, Hammer, Puzzle } from 'lucide-react';
 import { Navigation } from '@/components/ui/Navigation';
 import { useTranslations } from 'next-intl';
+import { InstallPwaButton } from "@/components/ui/InstallPwaButton";
 
 export default function Home() {
   const t = useTranslations('Home');
@@ -44,6 +45,7 @@ export default function Home() {
                   {t('cta_platforms')}
                 </Button>
               </Link>
+              <InstallPwaButton variant="outline" className="h-12 px-8 text-base border-white/10 hover:bg-white/5" />
             </div>
             
             {/* Realistic UI representation */}
@@ -136,8 +138,46 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Extensions & Apps Section */}
+        <section id="extensions" className="py-24 bg-muted/30 border-y border-white/5 relative overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="flex flex-col md:flex-row items-center gap-12 max-w-6xl mx-auto">
+              <div className="flex-1 space-y-6">
+                <Badge variant="outline" className="border-primary/30 text-primary px-3 py-1 bg-primary/5">New Feature</Badge>
+                <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Auto-Submitter Chrome Extension</h2>
+                <p className="text-lg text-muted-foreground">
+                  Stop downloading CSVs. Install our open-source Chrome Extension to instantly inject your curated metadata directly into Shutterstock and Adobe Stock upload forms with a single click.
+                </p>
+                <div className="flex gap-4 pt-4">
+                  <Button size="lg" className="h-12 bg-white text-black hover:bg-white/90">
+                    <Puzzle className="h-5 w-5 mr-2" />
+                    Get Chrome Extension
+                  </Button>
+                </div>
+              </div>
+              <div className="flex-1 w-full max-w-md bg-card border border-white/10 rounded-2xl p-6 shadow-2xl relative">
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-accent/20 blur-2xl rounded-full"></div>
+                <div className="flex items-center gap-3 mb-6 pb-6 border-b border-white/10">
+                  <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                    <Puzzle className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold">BuatinCSV Auto-Submitter</h3>
+                    <p className="text-xs text-green-500">Supported platform detected.</p>
+                  </div>
+                </div>
+                <Button className="w-full h-12 text-lg shadow-[0_0_15px_-5px_rgba(34,211,238,0.5)]">
+                  Inject Metadata Here
+                </Button>
+                <p className="text-xs text-center text-muted-foreground mt-4">Simulated Extension UI</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Platforms Section */}
-        <section id="platforms" className="py-24">
+        <section id="platforms" className="py-24 bg-background">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
               <div>

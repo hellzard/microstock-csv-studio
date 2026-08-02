@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "BuatinCSV Auto-Submitter",
+  "version": "1.0.0",
+  "description": "Automatically injects metadata from BuatinCSV into Microstock agency forms.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://submit.shutterstock.com/*",
+    "https://contributor.stock.adobe.com/*",
+    "https://buatincsv.vercel.app/*",
+    "http://localhost:3000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "BuatinCSV Auto-Submitter"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://submit.shutterstock.com/*",
+        "https://contributor.stock.adobe.com/*"
+      ],
+      "js": ["content.js"]
+    }
+  ]
+}

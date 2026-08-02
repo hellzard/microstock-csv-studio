@@ -13,9 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { validateAsset } from "@/lib/validators";
-import { AlertTriangle, Bot, CheckSquare, Sparkles, CopyPlus } from "lucide-react";
+import { AlertTriangle, Bot, CheckSquare, Sparkles, CopyPlus, UserCheck } from "lucide-react";
 import { useTemplateStore } from "@/lib/store/useTemplateStore";
 import { scanForTrademarks } from "@/lib/validators/trademark-auditor";
+import { lintMetadata } from "@/lib/validators/policy-linter";
+import { getKeywordTrendScore, getTrendColor } from "@/lib/utils/trends";
 
 interface MetadataDataTableProps {
   data: MasterAsset[];
@@ -50,28 +52,46 @@ export function MetadataDataTable({ data, onUpdateAsset, onBulkUpdate }: Metadat
     {
       accessorKey: "originalFilename",
       header: "Filename",
-      cell: (info) => (
-        <div className="font-mono text-xs w-24 truncate" title={info.getValue() as string}>
-          {info.getValue() as string}
-        </div>
-      ),
+      cell: (info) => {
+        const asset = info.row.original;
+        return (
+          <div className="flex flex-col gap-1">
+            <div className="font-mono text-xs w-24 truncate" title={info.getValue() as string}>
+              {info.getValue() as string}
+            </div>
+            {asset.modelReleaseRequired && (
+              <Badge variant="destructive" className="h-4 text-[9px] px-1 bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20 whitespace-nowrap w-fit">
+                <UserCheck className="h-3 w-3 mr-1" /> Release
+              </Badge>
+            )}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "title",
       header: "Title",
       cell: (info) => {
         const asset = info.row.original;
-        const audit = scanForTrademarks(asset.title || "", []);
+        const audit = lintMetadata(asset.title || "", [], asset.generativeAi);
         const hasViolations = audit.hasViolations;
         
         return (
-          <Input 
-            defaultValue={(info.getValue() as string) || ""} 
-            onBlur={(e) => onUpdateAsset?.(asset.id, { title: e.target.value })}
-            className={`h-8 bg-transparent ${hasViolations ? 'border-destructive focus:border-destructive text-destructive' : 'border-transparent hover:border-white/20 focus:border-primary'} rounded-sm`}
-            placeholder="Enter title..."
-            title={hasViolations ? `Trademark warning: ${audit.violations.join(", ")}` : undefined}
-          />
+          <div className="flex flex-col gap-1">
+            <Input 
+              defaultValue={(info.getValue() as string) || ""} 
+              onBlur={(e) => onUpdateAsset?.(asset.id, { title: e.target.value })}
+              className={`h-8 bg-transparent ${hasViolations ? 'border-destructive focus:border-destructive text-destructive' : 'border-transparent hover:border-white/20 focus:border-primary'} rounded-sm`}
+              placeholder="Enter title..."
+              title={hasViolations ? `Policy warning: ${audit.violations.map(v => v.message).join(" | ")}` : undefined}
+            />
+            {hasViolations && (
+              <span className="text-[10px] text-destructive font-medium flex items-center gap-1">
+                <AlertTriangle className="h-3 w-3 shrink-0" />
+                <span className="truncate" title={audit.violations[0].message}>{audit.violations[0].message}</span>
+              </span>
+            )}
+          </div>
         );
       },
     },
@@ -96,7 +116,7 @@ export function MetadataDataTable({ data, onUpdateAsset, onBulkUpdate }: Metadat
       cell: (info) => {
         const asset = info.row.original;
         const kws = info.getValue() as string[];
-        const audit = scanForTrademarks("", kws || []);
+        const audit = lintMetadata("", kws || [], asset.generativeAi);
         
         return (
           <div className="flex flex-col gap-1">
@@ -107,13 +127,34 @@ export function MetadataDataTable({ data, onUpdateAsset, onBulkUpdate }: Metadat
               })}
               className={`h-8 bg-transparent ${audit.hasViolations ? 'border-destructive focus:border-destructive text-destructive' : 'border-transparent hover:border-white/20 focus:border-primary'} rounded-sm`}
               placeholder="Enter keywords..."
-              title={audit.hasViolations ? `Trademark warning: ${audit.violations.join(", ")}` : undefined}
+              title={audit.hasViolations ? `Policy warning: ${audit.violations.map(v => v.message).join(" | ")}` : undefined}
             />
             {audit.hasViolations && (
-              <span className="text-[10px] text-destructive font-medium flex items-center gap-1">
-                <AlertTriangle className="h-3 w-3" />
-                {audit.violations.join(", ")}
-              </span>
+              <div className="flex flex-col gap-0.5">
+                {audit.violations.slice(0, 2).map((v, i) => (
+                  <span key={i} className={`text-[10px] font-medium flex items-center gap-1 ${v.type === 'AI_RESTRICTION' ? 'text-amber-500' : 'text-destructive'}`}>
+                    <AlertTriangle className="h-3 w-3 shrink-0" />
+                    <span className="truncate" title={v.message}>{v.message}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+            {kws && kws.length > 0 && !audit.hasViolations && (
+              <div className="flex flex-wrap gap-1 mt-0.5">
+                {kws.slice(0, 4).map(k => {
+                   const score = getKeywordTrendScore(k);
+                   const color = getTrendColor(score);
+                   const colorClasses = color === 'green' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 
+                                        color === 'amber' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 
+                                        'bg-red-500/10 text-red-500 border-red-500/20';
+                   return (
+                     <span key={k} className={`text-[9px] px-1.5 py-0.5 rounded-sm border ${colorClasses} truncate max-w-[80px]`} title={`Trend Score: ${score}/100`}>
+                       {k} {score}
+                     </span>
+                   )
+                })}
+                {kws.length > 4 && <span className="text-[9px] text-muted-foreground self-center">+{kws.length - 4}</span>}
+              </div>
             )}
           </div>
         );
