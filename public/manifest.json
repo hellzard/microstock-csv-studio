@@ -1,0 +1,16 @@
+{
+  "name": "Microstock CSV Studio",
+  "short_name": "CSV Studio",
+  "description": "Professional Microstock Metadata & CSV Generator",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#06b6d4",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/x-icon"
+    }
+  ]
+}

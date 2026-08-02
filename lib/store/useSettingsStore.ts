@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 
 interface SettingsState {
   defaultCopyright: string;
+  geminiApiKey: string;
   exportFormat: 'csv' | 'zip';
   theme: 'dark' | 'light' | 'system';
   
@@ -14,6 +15,7 @@ export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
       defaultCopyright: '',
+      geminiApiKey: '',
       exportFormat: 'zip',
       theme: 'dark',
 

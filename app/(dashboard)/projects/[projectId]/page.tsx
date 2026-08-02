@@ -81,6 +81,9 @@ export default function ProjectWorkspacePage({
         <MetadataDataTable 
           data={projectAssets} 
           onUpdateAsset={(id, updates) => updateAsset(id, updates)} 
+          onBulkUpdate={(ids, updates) => {
+            ids.forEach(id => updateAsset(id, updates));
+          }}
         />
       </div>
     </div>

@@ -15,15 +15,17 @@ export default function SettingsPage() {
   
   // Local state for form before saving
   const [defaultCopyright, setDefaultCopyright] = useState("");
+  const [geminiApiKey, setGeminiApiKey] = useState("");
   const [isSaved, setIsSaved] = useState(false);
 
   // Sync state after hydration to avoid SSR mismatch
   useEffect(() => {
     setDefaultCopyright(settings.defaultCopyright);
-  }, [settings.defaultCopyright]);
+    setGeminiApiKey(settings.geminiApiKey);
+  }, [settings.defaultCopyright, settings.geminiApiKey]);
 
   const handleSave = () => {
-    settings.updateSettings({ defaultCopyright });
+    settings.updateSettings({ defaultCopyright, geminiApiKey });
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2000);
   };
@@ -63,6 +65,29 @@ export default function SettingsPage() {
               className="bg-background/50 max-w-md" 
             />
             <p className="text-xs text-muted-foreground">This name will be pre-filled when you create a new project.</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader>
+          <CardTitle className="text-lg">AI Integration (BYOK)</CardTitle>
+          <CardDescription>Configure your Google Gemini API key to enable AI Auto-Tagging.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="gemini">Gemini API Key</Label>
+            <Input 
+              id="gemini"
+              type="password"
+              value={geminiApiKey}
+              onChange={(e) => setGeminiApiKey(e.target.value)}
+              placeholder="AIzaSy..." 
+              className="bg-background/50 max-w-md" 
+            />
+            <p className="text-xs text-muted-foreground">
+              Your key is stored securely in your browser and never sent to our servers. Get a free key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary hover:underline">Google AI Studio</a>.
+            </p>
           </div>
         </CardContent>
         <CardFooter className="border-t border-white/5 pt-4">
