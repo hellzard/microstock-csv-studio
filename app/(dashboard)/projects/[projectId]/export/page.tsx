@@ -98,8 +98,15 @@ export default function ExportPage({
             const fileName = `${project.name}_${pv.adapter.displayName}.csv`;
             ftpCommandStr += `curl -T "${fileName}" ftp://${ftpHost}/ -u "${ftpUser}:${ftpPassword || ''}"\n`;
           }
-          // Note: Realistically, you would also upload the actual image/video files here,
-          // but for this MVP, generating the command for the CSVs serves as the functional proof of concept.
+          
+          // Add curl upload commands for each actual asset image
+          ftpCommandStr += `echo "Uploading media assets..."\n`;
+          for (const asset of projectAssets) {
+            if (asset.originalFilename) {
+              ftpCommandStr += `curl -T "${asset.originalFilename}" ftp://${ftpHost}/ -u "${ftpUser}:${ftpPassword || ''}"\n`;
+            }
+          }
+          
           ftpCommandStr += `echo "Upload complete!"\npause`;
         } else {
           ftpCommandStr = `echo "FTP credentials not configured in settings. Go to BuatinCSV Settings to add them."\npause`;

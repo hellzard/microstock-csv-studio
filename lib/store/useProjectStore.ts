@@ -31,6 +31,8 @@ interface ProjectState {
   updateAsset: (assetId: string, updates: Partial<MasterAsset>) => Promise<void>;
   deleteAsset: (assetId: string) => Promise<void>;
   deleteAssetsByProject: (projectId: string) => Promise<void>;
+  
+  syncFromCloud: () => Promise<void>;
 }
 
 // Helper to ensure user is logged in anonymously
@@ -221,6 +223,95 @@ export const useProjectStore = create<ProjectState>()(
          set((state) => ({
             assets: state.assets.filter((a) => a.projectId !== projectId),
          }));
+      },
+
+      syncFromCloud: async () => {
+        try {
+          const supabase = createClient();
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) return;
+          
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
+
+          // Fetch cloud projects
+          const { data: cloudProjects, error: projectError } = await supabase
+            .from('projects')
+            .select('*')
+            .eq('user_id', user.id);
+
+          if (projectError) throw projectError;
+
+          // Fetch cloud assets
+          const { data: cloudAssets, error: assetError } = await supabase
+            .from('assets')
+            .select('*')
+            .eq('user_id', user.id);
+
+          if (assetError) throw assetError;
+
+          if (cloudProjects && cloudProjects.length > 0) {
+            set((state) => {
+              // Merge projects (cloud takes precedence for cloud storage projects)
+              const localProjects = [...state.projects];
+              const mergedProjects = localProjects.filter(p => p.storageMode !== 'cloud');
+              
+              const mappedCloudProjects: Project[] = cloudProjects.map(cp => ({
+                id: cp.id,
+                name: cp.name,
+                assetType: cp.asset_type as any,
+                metadataLanguage: cp.metadata_language as any,
+                defaultCopyright: cp.default_copyright || '',
+                generativeAiDefault: cp.generative_ai_default,
+                defaultGenerationModel: cp.default_generation_model || '',
+                selectedPlatforms: cp.selected_platforms || [],
+                exportNamingConvention: cp.export_naming_convention || '',
+                status: cp.status as any,
+                createdAt: cp.created_at,
+                updatedAt: cp.updated_at,
+                storageMode: 'cloud'
+              }));
+
+              // Merge assets
+              const localAssets = [...state.assets];
+              const mergedAssets = localAssets.filter(a => {
+                const proj = state.projects.find(p => p.id === a.projectId);
+                return proj?.storageMode !== 'cloud';
+              });
+
+              const mappedCloudAssets: MasterAsset[] = (cloudAssets || []).map(ca => ({
+                id: ca.id,
+                projectId: ca.project_id,
+                originalFilename: ca.original_filename,
+                currentFilename: ca.current_filename,
+                extension: ca.extension,
+                assetType: ca.asset_type as any,
+                mimeType: ca.mime_type,
+                fileSize: ca.file_size,
+                title: ca.title || '',
+                description: ca.description || '',
+                keywords: ca.keywords || [],
+                editorial: ca.editorial,
+                illustration: ca.illustration,
+                matureContent: ca.mature_content,
+                generativeAi: ca.generative_ai,
+                aiGeneratedMetadata: false,
+                releases: ca.releases || [],
+                auditStatus: ca.audit_status as any,
+                copyrightOwner: ca.copyright_owner || '',
+                createdAt: ca.created_at,
+                updatedAt: ca.updated_at
+              }));
+
+              return {
+                projects: [...mergedProjects, ...mappedCloudProjects],
+                assets: [...mergedAssets, ...mappedCloudAssets]
+              };
+            });
+          }
+        } catch (error) {
+          console.error("Failed to sync from cloud", error);
+        }
       },
     }),
     {

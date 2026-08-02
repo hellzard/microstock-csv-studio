@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Layers, Folder, Home, Settings, LogOut, UploadCloud, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
+import { CloudSyncProvider } from "@/components/providers/CloudSyncProvider";
 
 export default function DashboardLayout({
   children,
@@ -102,7 +103,9 @@ export default function DashboardLayout({
         </header>
 
         <div className="flex-1 overflow-auto p-6 md:p-8">
-          {children}
+          <CloudSyncProvider>
+            {children}
+          </CloudSyncProvider>
         </div>
       </main>
     </div>
