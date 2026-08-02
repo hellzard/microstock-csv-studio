@@ -1,12 +1,23 @@
 import { PlatformAdapter, PlatformRow } from "@/types/platforms";
 import Papa from "papaparse";
 
+function sanitizeCsvValue(value: any): any {
+  if (typeof value === "string") {
+    // Prevent formula injection in spreadsheet software
+    if (value.startsWith("=") || value.startsWith("+") || value.startsWith("-") || value.startsWith("@")) {
+      return `'${value}`;
+    }
+  }
+  return value;
+}
+
 export async function generateCsvBlob(adapter: PlatformAdapter, rows: PlatformRow[]): Promise<Blob> {
   // Map rows strictly to adapter columns in the correct order
   const orderedData = rows.map(row => {
     const orderedRow: Record<string, any> = {};
     adapter.columns.forEach(col => {
-      orderedRow[col.name] = row[col.name] !== undefined ? row[col.name] : "";
+      let cellValue = row[col.name] !== undefined ? row[col.name] : "";
+      orderedRow[col.name] = sanitizeCsvValue(cellValue);
     });
     return orderedRow;
   });

@@ -1,23 +1,30 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import { MasterAsset } from '@/types/master-asset';
+import { Project } from '@/types/project';
+import { get, set, del } from 'idb-keyval';
 
-export interface Project {
-  id: string;
-  name: string;
-  defaultCopyright?: string;
-  createdAt: string;
-  status: 'Draft' | 'Ready' | 'Exported';
-}
+// Custom storage engine using IndexedDB via idb-keyval
+const idbStorage: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    return (await get(name)) || null;
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await set(name, value);
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await del(name);
+  },
+};
 
 interface ProjectState {
   projects: Project[];
   assets: MasterAsset[];
   
   // Actions
-  createProject: (name: string, defaultCopyright?: string) => Project;
+  createProject: (data: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => Project;
   deleteProject: (projectId: string) => void;
-  updateProjectStatus: (projectId: string, status: Project['status']) => void;
+  updateProject: (projectId: string, updates: Partial<Project>) => void;
   
   addAssets: (assets: MasterAsset[]) => void;
   updateAsset: (assetId: string, updates: Partial<MasterAsset>) => void;
@@ -31,12 +38,12 @@ export const useProjectStore = create<ProjectState>()(
       projects: [],
       assets: [],
 
-      createProject: (name, defaultCopyright) => {
+      createProject: (data) => {
         const newProject: Project = {
+          ...data,
           id: `proj_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-          name,
-          defaultCopyright,
           createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
           status: 'Draft',
         };
         set((state) => ({ projects: [newProject, ...state.projects] }));
@@ -50,10 +57,10 @@ export const useProjectStore = create<ProjectState>()(
         }));
       },
 
-      updateProjectStatus: (projectId, status) => {
+      updateProject: (projectId, updates) => {
         set((state) => ({
           projects: state.projects.map((p) =>
-            p.id === projectId ? { ...p, status } : p
+            p.id === projectId ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
           ),
         }));
       },
@@ -88,6 +95,7 @@ export const useProjectStore = create<ProjectState>()(
     }),
     {
       name: 'microstock-project-storage',
+      storage: createJSONStorage(() => idbStorage),
     }
   )
 );

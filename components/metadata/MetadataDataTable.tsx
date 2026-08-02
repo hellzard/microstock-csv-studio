@@ -233,12 +233,12 @@ export function MetadataDataTable({ data, onUpdateAsset, onBulkUpdate }: Metadat
     <div className="space-y-4">
       {/* Bulk Action Bar */}
       {selectedRows.length > 0 && (
-        <div className="p-3 bg-primary/10 border border-primary/20 rounded-md flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+        <div className="p-3 bg-primary/10 border border-primary/20 rounded-md flex items-center justify-between flex-wrap gap-4 animate-in fade-in slide-in-from-top-2">
           <div className="flex items-center gap-2">
             <CheckSquare className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">{selectedRows.length} assets selected</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center flex-wrap gap-2">
             <select 
               className="h-8 text-sm bg-background border border-white/10 rounded px-2"
               onChange={(e) => handleApplyTemplate(e.target.value)}
@@ -249,6 +249,38 @@ export function MetadataDataTable({ data, onUpdateAsset, onBulkUpdate }: Metadat
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}
             </select>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8"
+              onClick={() => {
+                const ids = selectedRows.map(r => r.original.id);
+                onBulkUpdate?.(ids, { generativeAi: true });
+                setRowSelection({});
+              }}
+            >
+              Set as Gen AI
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8"
+              onClick={() => {
+                const ids = selectedRows.map(r => r.original.id);
+                onBulkUpdate?.(ids, { editorial: true });
+                setRowSelection({});
+              }}
+            >
+              Set as Editorial
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 text-muted-foreground"
+              onClick={() => setRowSelection({})}
+            >
+              Clear
+            </Button>
           </div>
         </div>
       )}
