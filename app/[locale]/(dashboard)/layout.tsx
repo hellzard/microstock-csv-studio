@@ -1,14 +1,18 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Layers, Folder, Home, Settings, LogOut, UploadCloud, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { CloudSyncProvider } from "@/components/providers/CloudSyncProvider";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = useTranslations("Navigation");
+
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
@@ -24,28 +28,32 @@ export default function DashboardLayout({
           <Link href="/dashboard">
             <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
               <Home className="h-4 w-4" />
-              Dashboard
+              {t("dashboard")}
             </Button>
           </Link>
           <Link href="/projects">
             <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
               <Folder className="h-4 w-4" />
-              Projects
+              {t("projects")}
             </Button>
           </Link>
           <Link href="/templates">
             <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
               <UploadCloud className="h-4 w-4" />
-              Templates
+              {t("templates")}
             </Button>
           </Link>
           <Link href="/settings">
             <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
               <Settings className="h-4 w-4" />
-              Settings
+              {t("settings")}
             </Button>
           </Link>
         </nav>
+        
+        <div className="p-4 border-t border-white/10">
+          <LanguageSwitcher />
+        </div>
       </aside>
 
       {/* Main Content */}
@@ -76,28 +84,31 @@ export default function DashboardLayout({
                 <Link href="/dashboard">
                   <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
                     <Home className="h-4 w-4" />
-                    Dashboard
+                    {t("dashboard")}
                   </Button>
                 </Link>
                 <Link href="/projects">
                   <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
                     <Folder className="h-4 w-4" />
-                    Projects
+                    {t("projects")}
                   </Button>
                 </Link>
                 <Link href="/templates">
                   <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
                     <UploadCloud className="h-4 w-4" />
-                    Templates
+                    {t("templates")}
                   </Button>
                 </Link>
                 <Link href="/settings">
                   <Button variant="ghost" className="w-full justify-start gap-3 text-foreground hover:bg-white/5">
                     <Settings className="h-4 w-4" />
-                    Settings
+                    {t("settings")}
                   </Button>
                 </Link>
               </nav>
+              <div className="p-4 border-t border-white/10">
+                <LanguageSwitcher />
+              </div>
             </SheetContent>
           </Sheet>
         </header>

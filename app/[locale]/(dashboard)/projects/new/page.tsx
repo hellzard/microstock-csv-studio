@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Loader2, Database, HardDrive, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useProjectStore } from "@/lib/store/useProjectStore";
 import { useSettingsStore } from "@/lib/store/useSettingsStore";
 import { MasterAsset } from "@/types/master-asset";

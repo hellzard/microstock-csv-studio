@@ -1,0 +1,26 @@
+{
+  "Navigation": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "templates": "Templates",
+    "settings": "Settings"
+  },
+  "Common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error"
+  },
+  "Home": {
+    "badge": "Microstock Metadata Control Room",
+    "title_part1": "One batch.",
+    "title_part2": "Every marketplace format.",
+    "description": "Prepare titles, keywords, and AI details from one organized local workspace. Generate platform-ready CSV files validated against versioned marketplace rules.",
+    "cta_create": "Create metadata project",
+    "cta_platforms": "View supported platforms"
+  }
+}

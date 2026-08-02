@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { motion, AnimatePresence } from "framer-motion";
 import { Layers, Menu, X, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,10 @@ export function Navigation() {
         >
           {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
+      </div>
+
+      <div className="fixed top-6 right-24 z-50">
+        <LanguageSwitcher />
       </div>
 
       {/* Floating Logo (Optional but looks good to keep brand present) */}

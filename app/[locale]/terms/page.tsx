@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from "@/i18n/routing";
 import { Navigation } from '@/components/ui/Navigation';
 
 export default function TermsPage() {

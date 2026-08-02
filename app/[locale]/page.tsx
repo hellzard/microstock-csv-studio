@@ -1,10 +1,13 @@
-import Link from 'next/link';
+import { Link } from "@/i18n/routing";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Layers, CheckCircle2, Shield, Settings2, FileImage, Download, Info, AlertTriangle, Hammer } from 'lucide-react';
 import { Navigation } from '@/components/ui/Navigation';
+import { useTranslations } from 'next-intl';
 
 export default function Home() {
+  const t = useTranslations('Home');
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navigation />
@@ -18,27 +21,27 @@ export default function Home() {
 
           <div className="container relative mx-auto px-4 text-center">
             <Badge variant="outline" className="mb-6 border-primary/30 text-primary px-3 py-1 bg-primary/5">
-              Microstock Metadata Control Room
+              {t('badge')}
             </Badge>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 max-w-4xl mx-auto leading-tight">
-              One batch. <br className="hidden md:block" />
+              {t('title_part1')} <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                Every marketplace format.
+                {t('title_part2')}
               </span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-              Prepare titles, keywords, and AI details from one organized local workspace. Generate platform-ready CSV files validated against versioned marketplace rules.
+              {t('description')}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/dashboard">
                 <Button size="lg" className="h-12 px-8 text-base shadow-[0_0_20px_-5px_rgba(34,211,238,0.4)]">
-                  Create metadata project
+                  {t('cta_create')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="#platforms">
                 <Button size="lg" variant="outline" className="h-12 px-8 text-base border-white/10 hover:bg-white/5">
-                  View supported platforms
+                  {t('cta_platforms')}
                 </Button>
               </Link>
             </div>

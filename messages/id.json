@@ -1,0 +1,26 @@
+{
+  "Navigation": {
+    "dashboard": "Beranda",
+    "projects": "Proyek",
+    "templates": "Template",
+    "settings": "Pengaturan"
+  },
+  "Common": {
+    "save": "Simpan",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "edit": "Ubah",
+    "create": "Buat",
+    "loading": "Memuat...",
+    "success": "Berhasil",
+    "error": "Kesalahan"
+  },
+  "Home": {
+    "badge": "Ruang Kontrol Metadata Microstock",
+    "title_part1": "Satu proses.",
+    "title_part2": "Semua format marketplace.",
+    "description": "Siapkan judul, kata kunci, dan detail AI dari satu ruang kerja lokal yang tertata rapi. Hasilkan file CSV yang siap diunggah dan divalidasi sesuai dengan aturan terbaru dari marketplace.",
+    "cta_create": "Buat proyek metadata",
+    "cta_platforms": "Lihat platform yang didukung"
+  }
+}
