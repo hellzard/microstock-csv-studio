@@ -20,6 +20,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "BuatinCSV — Multi-Microstock Metadata Studio",
   description: "Prepare, validate, and export metadata CSV files for multiple microstock contributor platforms from one organized workspace.",
+  keywords: ["microstock", "csv", "metadata", "shutterstock", "adobe stock", "contributor"],
+  authors: [{ name: "BuatinCSV" }],
+  creator: "BuatinCSV",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://microstock-csv-studio.vercel.app/",
+    title: "BuatinCSV — Multi-Microstock Metadata Studio",
+    description: "Prepare, validate, and export metadata CSV files for multiple microstock contributor platforms from one organized workspace.",
+    siteName: "BuatinCSV",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BuatinCSV — Multi-Microstock Metadata Studio",
+    description: "Prepare, validate, and export metadata CSV files for multiple microstock contributor platforms from one organized workspace.",
+  },
   icons: {
     icon: "/favicon.ico",
   },

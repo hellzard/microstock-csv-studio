@@ -255,6 +255,7 @@ export default function Home() {
             <span className="font-bold text-lg text-foreground tracking-tight">BuatinCSV</span>
           </div>
           <div className="flex flex-wrap justify-center gap-6 md:gap-8">
+            <Link href="/blog" className="hover:text-primary transition-colors font-medium text-foreground">Blog & SEO</Link>
             <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
             <Link href="/security" className="hover:text-primary transition-colors">Security</Link>

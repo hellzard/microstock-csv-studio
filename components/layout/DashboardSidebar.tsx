@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Link } from "@/i18n/routing";
-import { Layers, Folder, Home, Settings, UploadCloud, ChevronLeft, ChevronRight } from "lucide-react";
+import { Layers, Folder, Home, Settings, UploadCloud, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { useTranslations } from "next-intl";
@@ -47,6 +47,12 @@ export function DashboardSidebar() {
           <Button variant="ghost" className={`w-full h-12 ${isCollapsed ? 'justify-center px-0' : 'justify-start px-4'} gap-4 text-foreground hover:bg-white/5 rounded-xl`} title={isCollapsed ? t("templates") : undefined}>
             <UploadCloud className="h-6 w-6 shrink-0" />
             {!isCollapsed && <span className="text-base whitespace-nowrap">{t("templates")}</span>}
+          </Button>
+        </Link>
+        <Link href="/blog">
+          <Button variant="ghost" className={`w-full h-12 ${isCollapsed ? 'justify-center px-0' : 'justify-start px-4'} gap-4 text-foreground hover:bg-white/5 rounded-xl`} title={isCollapsed ? "Blog & SEO" : undefined}>
+            <BookOpen className="h-6 w-6 shrink-0 text-indigo-400" />
+            {!isCollapsed && <span className="text-base whitespace-nowrap">Blog & SEO</span>}
           </Button>
         </Link>
         <Link href="/settings">
