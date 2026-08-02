@@ -150,10 +150,12 @@ export default function Home() {
                   Stop downloading CSVs. Install our open-source Chrome Extension to instantly inject your curated metadata directly into Shutterstock and Adobe Stock upload forms with a single click.
                 </p>
                 <div className="flex gap-4 pt-4">
-                  <Button size="lg" className="h-12 bg-white text-black hover:bg-white/90">
-                    <Puzzle className="h-5 w-5 mr-2" />
-                    Get Chrome Extension
-                  </Button>
+                  <a href="/extension.zip" download="buatincsv-extension.zip" className="inline-block">
+                    <Button size="lg" className="h-12 bg-white text-black hover:bg-white/90">
+                      <Puzzle className="h-5 w-5 mr-2" />
+                      Get Chrome Extension
+                    </Button>
+                  </a>
                 </div>
               </div>
               <div className="flex-1 w-full max-w-md bg-card border border-white/10 rounded-2xl p-6 shadow-2xl relative">
