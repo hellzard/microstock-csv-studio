@@ -248,18 +248,18 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-white/10 bg-background">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Layers className="h-5 w-5" />
-            <span className="font-semibold text-foreground">BuatinCSV</span>
+      <footer className="py-12 border-t border-white/10 bg-background/50 backdrop-blur-md">
+        <div className="container mx-auto px-4 flex flex-col items-center justify-center gap-6 text-sm text-muted-foreground text-center">
+          <div className="flex items-center gap-2 opacity-80">
+            <Layers className="h-6 w-6 text-primary" />
+            <span className="font-bold text-lg text-foreground tracking-tight">BuatinCSV</span>
           </div>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
-            <Link href="/security" className="hover:text-foreground transition-colors">Security</Link>
+          <div className="flex flex-wrap justify-center gap-6 md:gap-8">
+            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+            <Link href="/security" className="hover:text-primary transition-colors">Security</Link>
           </div>
-          <p>&copy; {new Date().getFullYear()} BuatinCSV. All rights reserved.</p>
+          <p className="opacity-60">&copy; {new Date().getFullYear()} BuatinCSV Studio. All rights reserved.</p>
         </div>
       </footer>
     </div>

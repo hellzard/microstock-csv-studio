@@ -30,40 +30,40 @@ export function DashboardSidebar() {
         </Button>
       </div>
       
-      <nav className="flex-1 p-4 space-y-2 overflow-x-hidden">
+      <nav className="flex-1 p-4 space-y-3 overflow-x-hidden">
         <Link href="/dashboard">
-          <Button variant="ghost" className={`w-full ${isCollapsed ? 'justify-center px-0' : 'justify-start'} gap-3 text-foreground hover:bg-white/5`} title={isCollapsed ? t("dashboard") : undefined}>
-            <Home className="h-5 w-5 shrink-0" />
-            {!isCollapsed && <span className="whitespace-nowrap">{t("dashboard")}</span>}
+          <Button variant="ghost" className={`w-full h-12 ${isCollapsed ? 'justify-center px-0' : 'justify-start px-4'} gap-4 text-foreground hover:bg-white/5 rounded-xl`} title={isCollapsed ? t("dashboard") : undefined}>
+            <Home className="h-6 w-6 shrink-0" />
+            {!isCollapsed && <span className="text-base whitespace-nowrap">{t("dashboard")}</span>}
           </Button>
         </Link>
         <Link href="/projects">
-          <Button variant="ghost" className={`w-full ${isCollapsed ? 'justify-center px-0' : 'justify-start'} gap-3 text-foreground hover:bg-white/5`} title={isCollapsed ? t("projects") : undefined}>
-            <Folder className="h-5 w-5 shrink-0" />
-            {!isCollapsed && <span className="whitespace-nowrap">{t("projects")}</span>}
+          <Button variant="ghost" className={`w-full h-12 ${isCollapsed ? 'justify-center px-0' : 'justify-start px-4'} gap-4 text-foreground hover:bg-white/5 rounded-xl`} title={isCollapsed ? t("projects") : undefined}>
+            <Folder className="h-6 w-6 shrink-0" />
+            {!isCollapsed && <span className="text-base whitespace-nowrap">{t("projects")}</span>}
           </Button>
         </Link>
         <Link href="/templates">
-          <Button variant="ghost" className={`w-full ${isCollapsed ? 'justify-center px-0' : 'justify-start'} gap-3 text-foreground hover:bg-white/5`} title={isCollapsed ? t("templates") : undefined}>
-            <UploadCloud className="h-5 w-5 shrink-0" />
-            {!isCollapsed && <span className="whitespace-nowrap">{t("templates")}</span>}
+          <Button variant="ghost" className={`w-full h-12 ${isCollapsed ? 'justify-center px-0' : 'justify-start px-4'} gap-4 text-foreground hover:bg-white/5 rounded-xl`} title={isCollapsed ? t("templates") : undefined}>
+            <UploadCloud className="h-6 w-6 shrink-0" />
+            {!isCollapsed && <span className="text-base whitespace-nowrap">{t("templates")}</span>}
           </Button>
         </Link>
         <Link href="/settings">
-          <Button variant="ghost" className={`w-full ${isCollapsed ? 'justify-center px-0' : 'justify-start'} gap-3 text-foreground hover:bg-white/5`} title={isCollapsed ? t("settings") : undefined}>
-            <Settings className="h-5 w-5 shrink-0" />
-            {!isCollapsed && <span className="whitespace-nowrap">{t("settings")}</span>}
+          <Button variant="ghost" className={`w-full h-12 ${isCollapsed ? 'justify-center px-0' : 'justify-start px-4'} gap-4 text-foreground hover:bg-white/5 rounded-xl`} title={isCollapsed ? t("settings") : undefined}>
+            <Settings className="h-6 w-6 shrink-0" />
+            {!isCollapsed && <span className="text-base whitespace-nowrap">{t("settings")}</span>}
           </Button>
         </Link>
       </nav>
       
       <div className={`p-4 border-t border-white/10 flex ${isCollapsed ? 'justify-center' : 'justify-start'} overflow-hidden`}>
         {!isCollapsed ? (
-          <LanguageSwitcher />
-        ) : (
-          <div className="h-8 w-8 flex items-center justify-center rounded-full bg-white/5 text-xs text-muted-foreground" title="Language">
-             🌐
+          <div className="w-full">
+            <LanguageSwitcher isCollapsed={false} />
           </div>
+        ) : (
+          <LanguageSwitcher isCollapsed={true} />
         )}
       </div>
     </aside>

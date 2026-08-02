@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ isCollapsed }: { isCollapsed?: boolean }) {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -23,10 +23,13 @@ export function LanguageSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="outline-none" aria-label="Select Language">
-        <Button variant="outline" size="sm" className="gap-2 border-white/20 bg-background/50 hover:bg-white/10" tabIndex={-1}>
-          <Globe className="h-4 w-4" />
-          <span className="uppercase font-medium text-xs">{locale}</span>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="ghost" 
+          className={`h-12 border border-white/10 bg-white/5 hover:bg-white/10 rounded-xl flex items-center transition-all ${isCollapsed ? 'w-12 justify-center px-0' : 'w-full justify-start px-4 gap-4'}`}
+        >
+          <Globe className="h-6 w-6 shrink-0" />
+          {!isCollapsed && <span className="font-medium text-base uppercase tracking-wider">{locale}</span>}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
